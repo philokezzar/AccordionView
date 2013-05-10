@@ -42,6 +42,7 @@
 @property (nonatomic, assign) NSTimeInterval animationDuration;
 @property (nonatomic, assign) UIViewAnimationCurve animationCurve;
 @property (nonatomic, assign) BOOL allowsMultipleSelection;
+@property (nonatomic, assign) BOOL allowsUITableSectionStyle;
 @property (nonatomic, strong) NSIndexSet *selectionIndexes;
 @property (nonatomic, strong) id <AccordionViewDelegate> delegate;
 

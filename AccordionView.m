@@ -22,7 +22,7 @@
 @implementation AccordionView
 
 @synthesize selectedIndex, isHorizontal, animationDuration, animationCurve;
-@synthesize allowsMultipleSelection, selectionIndexes, delegate;
+@synthesize allowsMultipleSelection, selectionIndexes, delegate, allowsUITableSectionStyle;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -49,6 +49,7 @@
         scrollView.delegate = self;
         
         self.allowsMultipleSelection = NO;
+        self.allowsUITableSectionStyle = NO;
     }
     
     return self;
@@ -218,7 +219,7 @@
         if (self.isHorizontal) {
             // TODO
         } else {
-            if (view.frame.size.height > 0) {
+            if (view.frame.size.height > 0 && allowsUITableSectionStyle) {
                 UIView *header = [headers objectAtIndex:i];
                 CGRect content = view.frame;
                 content.origin.y -= header.frame.size.height;
