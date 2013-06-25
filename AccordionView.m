@@ -1,28 +1,28 @@
 /*
-    AccordionView.m
-
-    Created by Wojtek Siudzinski on 19.12.2011.
-    Copyright (c) 2011 Appsome. All rights reserved.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ AccordionView.m
+ 
+ Created by Wojtek Siudzinski on 19.12.2011.
+ Copyright (c) 2011 Appsome. All rights reserved.
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 #import "AccordionView.h"
 
 @implementation AccordionView
 
-@synthesize selectedIndex, isHorizontal, animationDuration, animationCurve;
-@synthesize allowsMultipleSelection, selectionIndexes, delegate, allowsUITableSectionStyle;
+@synthesize selectedIndex, isHorizontal, animationDuration, animationCurve, views, headers, originalSizes, scrollView;
+@synthesize allowsMultipleSelection, selectionIndexes, delegate, allowsUITableSectionStyle,openFirstIndex;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -50,6 +50,8 @@
         
         self.allowsMultipleSelection = NO;
         self.allowsUITableSectionStyle = NO;
+        self.openFirstIndex = true;
+        
     }
     
     return self;
@@ -57,8 +59,8 @@
 
 - (void)addHeader:(id)aHeader withView:(id)aView {
     if ((aHeader != nil) && (aView != nil)) {
-        [headers addObject:aHeader];        
-        [views addObject:aView];        
+        [headers addObject:aHeader];
+        [views addObject:aView];
         [originalSizes addObject:[NSValue valueWithCGSize:[aView frame].size]];
         
         [aView setAutoresizingMask:UIViewAutoresizingNone];
@@ -87,7 +89,8 @@
             [aHeader addTarget:self action:@selector(touchDown:) forControlEvents:UIControlEventTouchUpInside];
         }
         
-        if ([selectionIndexes count] == 0) {
+        // to have flexibility of not opening 1st tab as default. by default is TRUE
+        if ([selectionIndexes count] == 0 && self.openFirstIndex && selectedIndex == 0) {
             [self setSelectedIndex:0];
         }
     }
@@ -105,7 +108,7 @@
         
         [cleanIndexes addIndex:idx];
     }];
-
+    
     selectionIndexes = cleanIndexes;
     [self setNeedsLayout];
     
@@ -115,7 +118,7 @@
 }
 
 - (void)setSelectedIndex:(NSInteger)aSelectedIndex {
-    [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:aSelectedIndex]];    
+    [self setSelectionIndexes:[NSIndexSet indexSetWithIndex:aSelectedIndex]];
 }
 
 - (NSInteger)selectedIndex {
@@ -132,6 +135,12 @@
 
 - (void)touchDown:(id)sender {
     if (allowsMultipleSelection) {
+        
+        // init the indexSet. otherwise, 1st time "addIndex" will not work
+        if(selectionIndexes == nil){
+            selectionIndexes = [[NSMutableIndexSet alloc] init];
+        }
+        
         NSMutableIndexSet *mis = [selectionIndexes mutableCopy];
         if ([selectionIndexes containsIndex:[sender tag]]) {
             [mis removeIndex:[sender tag]];

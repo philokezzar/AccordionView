@@ -24,6 +24,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     AccordionView *accordion = [[AccordionView alloc] initWithFrame:CGRectMake(0, 0, 320, 420)];
     [self.view addSubview:accordion];
+    accordion.openFirstIndex = NO;
     
     // Only height is taken into account, so other parameters are just dummy
     UIButton *header1 = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 0, 30)];
